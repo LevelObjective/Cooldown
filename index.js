@@ -1,9 +1,10 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
-const token = 'BOT TOKEN HERE';
+const token = 'INSERT BOT TOKEN HERE';
 
 bot.on('ready', () => {
     console.log("Bot is online");
+    
 });
 
 bot.cooldowns= require("./cooldowns.json")
@@ -18,12 +19,15 @@ bot.on('message', message => {
         let CD_role = message.mentions.roles.first();
         let CD_duration = args[1];
         let CD_channel = message.mentions.channels.first()
-        bot.cooldowns [CD_role.name + " "+CD_channel.name] = {
+        bot.cooldowns [CD_role.id + " "+CD_channel.id] = {
             Role: CD_role.name,
             Channel: CD_channel.name,
             Duration: parseInt(CD_duration)
         };
-        if(!CD_role) return message.channel.send("I couldn't find the role **"+args[0]+"**");;
+        if(!args[0] || !args[1] || !args[2]) return message.channel.send("Invalid usage: !cooldown @Role [Duration] #Channel");
+        if(!CD_role) return message.channel.send("Invalid role!");
+        if(!CD_channel) return message.channel.send("Invalid channel!");
+        
         
         fs.writeFile("./cooldowns.json", JSON.stringify(bot.cooldowns, null,4), err =>{
             if (err)throw err;
@@ -32,13 +36,13 @@ bot.on('message', message => {
     }else{
         if(message.member.hasPermission("ADMINISTRATOR")) return;
         let CD_channel = message.channel;
-        let CD_duration = 1509;
+        let CD_duration = 150900;
         let CurrentDuration;
         let Role;
         message.member.roles.forEach(role => {
                 try {
                     
-                CurrentDuration = bot.cooldowns[role.name + " "+CD_channel.name].Duration;
+                CurrentDuration = bot.cooldowns[role.id + " "+CD_channel.id].Duration;
                 if (CurrentDuration) {
                     if(CD_duration>CurrentDuration){
                         CD_duration = CurrentDuration;
@@ -50,14 +54,14 @@ bot.on('message', message => {
             
         })
         
-        if(cooldown.has(message.author.id+": "+CD_channel.name)){
+        if(cooldown.has(message.author.id+": "+CD_channel.id)){
             message.delete();
             return;
             //message.author.send("");
         }
-        cooldown.add(message.author.id+": "+CD_channel.name);
+        cooldown.add(message.author.id+": "+CD_channel.id);
         setTimeout(() =>{
-            cooldown.delete(message.author.id+": "+CD_channel.name);
+            cooldown.delete(message.author.id+": "+CD_channel.id);
         }, CD_duration * 1000)
     }
     }
