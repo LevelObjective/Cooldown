@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
-const token = 'INSERT BOT TOKEN HERE';
+const token = 'TOKEN HERE';
 
 bot.on('ready', () => {
     console.log("Bot is online");
@@ -11,6 +11,7 @@ bot.cooldowns= require("./cooldowns.json")
 
 const fs = require("fs");
 let cooldown = new Set();
+
 
 bot.on('message', message => {
     if (message.content.startsWith("!cooldown ")){
@@ -29,9 +30,17 @@ bot.on('message', message => {
         if(!CD_channel) return message.channel.send("Invalid channel!");
         
         
+        if(parseInt(CD_duration)==0) {
+            delete bot.cooldowns[CD_role.id + " "+CD_channel.id];
+            fs.writeFile("./cooldowns.json", JSON.stringify(bot.cooldowns, null,4), err =>{
+                if (err)throw err;
+                message.channel.send("Cooldown has been **deleted** successfully!");
+            });
+            return;
+        }
         fs.writeFile("./cooldowns.json", JSON.stringify(bot.cooldowns, null,4), err =>{
             if (err)throw err;
-            message.channel.send("Cooldown has been added successfully!");
+            message.channel.send("Cooldown has been **added** successfully!");
         });
     }else{
         if(message.member.hasPermission("ADMINISTRATOR")) return;
@@ -59,6 +68,7 @@ bot.on('message', message => {
             return;
             //message.author.send("");
         }
+        if(CD_duration==150900) return;
         cooldown.add(message.author.id+": "+CD_channel.id);
         setTimeout(() =>{
             cooldown.delete(message.author.id+": "+CD_channel.id);
