@@ -14,18 +14,20 @@ let cooldown = new Set();
 
 
 bot.on('message', message => {
-    if (message.content.startsWith("!cooldown ")){
+    if (message.content.startsWith("!cooldown")){
         if(!message.member.hasPermission("ADMINISTRATOR")) return message.channel.send("You do not have permission to execute that command.");
         let args = message.content.slice(10).split(" ");
         let CD_role = message.mentions.roles.first();
         let CD_duration = args[1];
         let CD_channel = message.mentions.channels.first()
+
+        if(!CD_role || !CD_duration || CD_channel) return message.channel.send("```diff\n-Invalid usage: !cooldown @Role [Duration In Seconds] #Channel\n```");
+
         bot.cooldowns [CD_role.id + " "+CD_channel.id] = {
             Role: CD_role.name,
             Channel: CD_channel.name,
             Duration: parseInt(CD_duration)
         };
-        if(!args[0] || !args[1] || !args[2]) return message.channel.send("Invalid usage: !cooldown @Role [Duration] #Channel");
         if(!CD_role) return message.channel.send("Invalid role!");
         if(!CD_channel) return message.channel.send("Invalid channel!");
         
