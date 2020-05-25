@@ -21,7 +21,7 @@ bot.on('message', message => {
         let CD_duration = args[1];
         let CD_channel = message.mentions.channels.first()
 
-        if(!CD_role || !CD_duration || CD_channel) return message.channel.send("```diff\n-Invalid usage: !cooldown @Role [Duration In Seconds] #Channel\n```");
+        if(!CD_role || !CD_duration || !CD_channel) return message.channel.send("```diff\n-Invalid usage: !cooldown @Role [Duration In Seconds] #Channel\n```");
 
         bot.cooldowns [CD_role.id + " "+CD_channel.id] = {
             Role: CD_role.name,
